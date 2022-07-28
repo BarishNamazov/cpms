@@ -1,0 +1,23 @@
+{
+  "name": "isolated-sandbox",
+  "version": "1.0.0",
+  "description": "isolated sandbox abstraction in typescript",
+  "scripts": {
+    "demo": "tsc && node dist/demo.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BarishNamazov/isolated-sandbox.git"
+  },
+  "keywords": [
+    "isolate",
+    "cms",
+    "oj"
+  ],
+  "author": "Abutalib Barish Namazov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BarishNamazov/isolated-sandbox/issues"
+  },
+  "homepage": "https://github.com/BarishNamazov/isolated-sandbox#readme"
+}
