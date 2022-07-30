@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-
+#
+# Contest Practice Management System - https://github.com/BarishNamazov/cpms/
+# Copyright © 2022 Abutalib Barish Namazov <abutalib.namazov@hotmail.com>
+#
+# Some code snippets have been taken and readapted from CMS. 
+# For such pieces this copyright applies:
+#
 # Contest Management System - http://cms-dev.github.io/
 # Copyright © 2010-2014 Giovanni Mascellani <mascellani@poisson.phc.unipi.it>
 # Copyright © 2010-2018 Stefano Maggiolo <s.maggiolo@gmail.com>
@@ -7,9 +13,6 @@
 # Copyright © 2013 Luca Wehrstedt <luca.wehrstedt@gmail.com>
 # Copyright © 2014 Fabian Gundlach <320pointsguy@gmail.com>
 # Copyright © 2016 Myungwoo Chun <mc.tamaki@gmail.com>
-#
-# Contest-Practice Management System - https://github.com/BarishNamazov/cpms/
-# Copyright © 2022 Abutalib Barish Namazov <abutalib.namazov@hotmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
