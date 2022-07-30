@@ -1,8 +1,7 @@
 import logging
 from cpms.grading.Sandbox import SandboxBase
 
-logger = logging.getLogger("demo")
-logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
+sandbox = SandboxBase(None)
+sandbox.dummy()
 
-logger.debug("hello")
-logger.warning("yoo")
+logging.warn('hehe')
