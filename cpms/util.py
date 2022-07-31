@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#
+
 # Contest Practice Management System - https://github.com/BarishNamazov/cpms/
 # Copyright © 2022 Abutalib Barish Namazov <abutalib.namazov@hotmail.com>
 #
@@ -41,7 +41,7 @@ import gevent
 import gevent.socket
 
 # TODO most of these do not exist, add
-from cpms import ServiceCoord, ConfigError, async_config, config
+from cpms import config
 
 
 logger = logging.getLogger(__name__)
@@ -61,6 +61,7 @@ def mkdir(path):
     except OSError:
         return False
     else:
+        return
         try:
             os.chmod(path, 0o770)
             cmsuser_gid = pwd.getpwnam(config.cmsuser).pw_gid
@@ -128,69 +129,69 @@ def utf8_decoder(value):
     raise TypeError("Not a string.")
 
 
-def get_safe_shard(service, provided_shard):
-    """Return a safe shard number for the provided service, or raise.
+# def get_safe_shard(service, provided_shard):
+#     """Return a safe shard number for the provided service, or raise.
 
-    service (string): the name of the service trying to get its shard,
-        for looking it up in the config.
-    provided_shard (int|None): the shard number provided by the admin
-        via command line, or None (the default value).
+#     service (string): the name of the service trying to get its shard,
+#         for looking it up in the config.
+#     provided_shard (int|None): the shard number provided by the admin
+#         via command line, or None (the default value).
 
-    return (int): the provided shard number if it makes sense,
-        otherwise the shard number found matching the IP address with
-        the configuration.
+#     return (int): the provided shard number if it makes sense,
+#         otherwise the shard number found matching the IP address with
+#         the configuration.
 
-    raise (ValueError): if no safe shard can be returned.
+#     raise (ValueError): if no safe shard can be returned.
 
-    """
-    if provided_shard is None:
-        addrs = _find_local_addresses()
-        computed_shard = _get_shard_from_addresses(service, addrs)
-        if computed_shard is None:
-            logger.critical("Couldn't autodetect shard number and "
-                            "no shard specified for service %s, "
-                            "quitting.", service)
-            raise ValueError("No safe shard found for %s." % service)
-        else:
-            return computed_shard
-    else:
-        coord = ServiceCoord(service, provided_shard)
-        if coord not in async_config.core_services:
-            logger.critical("The provided shard number for service %s "
-                            "cannot be found in the configuration, "
-                            "quitting.", service)
-            raise ValueError("No safe shard found for %s." % service)
-        else:
-            return provided_shard
-
-
-def get_service_address(key):
-    """Give the Address of a ServiceCoord.
-
-    key (ServiceCoord): the service needed.
-    returns (Address): listening address of key.
-
-    """
-    if key in async_config.core_services:
-        return async_config.core_services[key]
-    elif key in async_config.other_services:
-        return async_config.other_services[key]
-    else:
-        raise KeyError("Service not found.")
+#     """
+#     if provided_shard is None:
+#         addrs = _find_local_addresses()
+#         computed_shard = _get_shard_from_addresses(service, addrs)
+#         if computed_shard is None:
+#             logger.critical("Couldn't autodetect shard number and "
+#                             "no shard specified for service %s, "
+#                             "quitting.", service)
+#             raise ValueError("No safe shard found for %s." % service)
+#         else:
+#             return computed_shard
+#     else:
+#         coord = ServiceCoord(service, provided_shard)
+#         if coord not in async_config.core_services:
+#             logger.critical("The provided shard number for service %s "
+#                             "cannot be found in the configuration, "
+#                             "quitting.", service)
+#             raise ValueError("No safe shard found for %s." % service)
+#         else:
+#             return provided_shard
 
 
-def get_service_shards(service):
-    """Returns the number of shards that a service has.
+# def get_service_address(key):
+#     """Give the Address of a ServiceCoord.
 
-    service (string): the name of the service.
-    returns (int): the number of shards defined in the configuration.
+#     key (ServiceCoord): the service needed.
+#     returns (Address): listening address of key.
 
-    """
-    for i in itertools.count():
-        try:
-            get_service_address(ServiceCoord(service, i))
-        except KeyError:
-            return i
+#     """
+#     if key in async_config.core_services:
+#         return async_config.core_services[key]
+#     elif key in async_config.other_services:
+#         return async_config.other_services[key]
+#     else:
+#         raise KeyError("Service not found.")
+
+
+# def get_service_shards(service):
+#     """Returns the number of shards that a service has.
+
+#     service (string): the name of the service.
+#     returns (int): the number of shards defined in the configuration.
+
+#     """
+#     for i in itertools.count():
+#         try:
+#             get_service_address(ServiceCoord(service, i))
+#         except KeyError:
+#             return i
 
 # TODO
 # def default_argument_parser(description, cls, ask_contest=None):
@@ -292,56 +293,56 @@ def _find_local_addresses():
     return addrs
 
 
-def _get_shard_from_addresses(service, addrs):
-    """Returns the first shard of a service that listens at one of the
-    specified addresses.
+# def _get_shard_from_addresses(service, addrs):
+#     """Returns the first shard of a service that listens at one of the
+#     specified addresses.
 
-    service (string): the name of the service.
-    addrs ([(int, str)]): a list like the one returned by
-        find_local_addresses().
+#     service (string): the name of the service.
+#     addrs ([(int, str)]): a list like the one returned by
+#         find_local_addresses().
 
-    returns (int|None): the found shard, or None in case it doesn't
-        exist.
+#     returns (int|None): the found shard, or None in case it doesn't
+#         exist.
 
-    """
-    ipv4_addrs = set()
-    ipv6_addrs = set()
-    for proto, addr in addrs:
-        if proto == gevent.socket.AF_INET:
-            ipv4_addrs.add(addr)
-        elif proto == gevent.socket.AF_INET6:
-            ipv6_addrs.add(addr)
+#     """
+#     ipv4_addrs = set()
+#     ipv6_addrs = set()
+#     for proto, addr in addrs:
+#         if proto == gevent.socket.AF_INET:
+#             ipv4_addrs.add(addr)
+#         elif proto == gevent.socket.AF_INET6:
+#             ipv6_addrs.add(addr)
 
-    for shard in itertools.count():
-        try:
-            host, port = get_service_address(ServiceCoord(service, shard))
-        except KeyError:
-            # No more shards to test.
-            return None
+#     for shard in itertools.count():
+#         try:
+#             host, port = get_service_address(ServiceCoord(service, shard))
+#         except KeyError:
+#             # No more shards to test.
+#             return None
 
-        try:
-            res_ipv4_addrs = set([x[4][0] for x in
-                                  gevent.socket.getaddrinfo(
-                                      host, port,
-                                      gevent.socket.AF_INET,
-                                      gevent.socket.SOCK_STREAM)])
-        except OSError:
-            pass
-        else:
-            if not ipv4_addrs.isdisjoint(res_ipv4_addrs):
-                return shard
+#         try:
+#             res_ipv4_addrs = set([x[4][0] for x in
+#                                   gevent.socket.getaddrinfo(
+#                                       host, port,
+#                                       gevent.socket.AF_INET,
+#                                       gevent.socket.SOCK_STREAM)])
+#         except OSError:
+#             pass
+#         else:
+#             if not ipv4_addrs.isdisjoint(res_ipv4_addrs):
+#                 return shard
 
-        try:
-            res_ipv6_addrs = set([x[4][0] for x in
-                                  gevent.socket.getaddrinfo(
-                                      host, port,
-                                      gevent.socket.AF_INET6,
-                                      gevent.socket.SOCK_STREAM)])
-        except OSError:
-            pass
-        else:
-            if not ipv6_addrs.isdisjoint(res_ipv6_addrs):
-                return shard
+#         try:
+#             res_ipv6_addrs = set([x[4][0] for x in
+#                                   gevent.socket.getaddrinfo(
+#                                       host, port,
+#                                       gevent.socket.AF_INET6,
+#                                       gevent.socket.SOCK_STREAM)])
+#         except OSError:
+#             pass
+#         else:
+#             if not ipv6_addrs.isdisjoint(res_ipv6_addrs):
+#                 return shard
 
 
 from shlex import quote

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#
+
 # Contest Practice Management System - https://github.com/BarishNamazov/cpms/
 # Copyright © 2022 Abutalib Barish Namazov <abutalib.namazov@hotmail.com>
 #

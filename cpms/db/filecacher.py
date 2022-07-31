@@ -42,37 +42,38 @@ from abc import ABCMeta, abstractmethod
 import gevent
 
 from cpms import config, mkdir, rmtree
+from cpmscommon.digest import Digester
 
 logger = logging.getLogger(__name__)
 
 
-# def copyfileobj(source_fobj, destination_fobj,
-#                 buffer_size=io.DEFAULT_BUFFER_SIZE):
-#     """Read all content from one file object and write it to another.
+def copyfileobj(source_fobj, destination_fobj,
+                buffer_size=io.DEFAULT_BUFFER_SIZE):
+    """Read all content from one file object and write it to another.
 
-#     Repeatedly read from the given source file object, until no content
-#     is left, and at the same time write the content to the destination
-#     file object. Never read or write more than the given buffer size.
-#     Be cooperative with other greenlets by yielding often.
+    Repeatedly read from the given source file object, until no content
+    is left, and at the same time write the content to the destination
+    file object. Never read or write more than the given buffer size.
+    Be cooperative with other greenlets by yielding often.
 
-#     source_fobj (fileobj): a file object open for reading, in either
-#         binary or text mode (doesn't need to be buffered).
-#     destination_fobj (fileobj): a file object open for writing, in the
-#         same mode as the source (doesn't need to be buffered).
-#     buffer_size (int): the size of the read/write buffer.
+    source_fobj (fileobj): a file object open for reading, in either
+        binary or text mode (doesn't need to be buffered).
+    destination_fobj (fileobj): a file object open for writing, in the
+        same mode as the source (doesn't need to be buffered).
+    buffer_size (int): the size of the read/write buffer.
 
-#     """
-#     while True:
-#         buffer = source_fobj.read(buffer_size)
-#         if len(buffer) == 0:
-#             break
-#         while len(buffer) > 0:
-#             gevent.sleep(0)
-#             written = destination_fobj.write(buffer)
-#             buffer = buffer[written:]
-#         gevent.sleep(0)
+    """
+    while True:
+        buffer = source_fobj.read(buffer_size)
+        if len(buffer) == 0:
+            break
+        while len(buffer) > 0:
+            gevent.sleep(0)
+            written = destination_fobj.write(buffer)
+            buffer = buffer[written:]
+        gevent.sleep(0)
 
-
+DIGEST_TOMBSTONE = "x"
 class TombstoneError(RuntimeError):
     """An error that represents the file cacher trying to read
     files that have been deleted from the database.
@@ -333,7 +334,7 @@ class NullBackend(FileCacherBackend):
 
 
 class FileCacher:
-    """This class implement a local cache for files stored as FSObject
+    """This class implements a local cache for files stored as FSObject
     in the database.
 
     """
@@ -507,7 +508,7 @@ class FileCacher:
         raise (TombstoneError): if the digest is the tombstone
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
 
         self._load(digest, True)
@@ -532,7 +533,7 @@ class FileCacher:
         raise (TombstoneError): if the digest is the tombstone
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
 
         logger.debug("Getting file %s.", digest)
@@ -553,7 +554,7 @@ class FileCacher:
         raise (TombstoneError): if the digest is the tombstone
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
         with self.get_file(digest) as src:
             return src.read()
@@ -572,7 +573,7 @@ class FileCacher:
         raise (TombstoneError): if the digest is the tombstone
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
         with self.get_file(digest) as src:
             copyfileobj(src, dst, self.CHUNK_SIZE)
@@ -590,7 +591,7 @@ class FileCacher:
         raise (KeyError): if the file cannot be found.
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
         with self.get_file(digest) as src:
             with open(dst_path, 'wb') as dst:
@@ -704,7 +705,7 @@ class FileCacher:
         raise (KeyError): if the file cannot be found.
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
         return self.backend.describe(digest)
 
@@ -720,7 +721,7 @@ class FileCacher:
         raise (TombstoneError): if the digest is the tombstone
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             raise TombstoneError()
         return self.backend.get_size(digest)
 
@@ -730,7 +731,7 @@ class FileCacher:
         digest (unicode): the digest of the file to delete.
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             return
         self.drop(digest)
         self.backend.delete(digest)
@@ -741,7 +742,7 @@ class FileCacher:
         digest (unicode): the file to delete.
 
         """
-        if digest == Digest.TOMBSTONE:
+        if digest == DIGEST_TOMBSTONE:
             return
         cache_file_path = os.path.join(self.file_dir, digest)
 

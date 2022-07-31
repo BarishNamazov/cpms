@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#
+
 # Contest Practice Management System - https://github.com/BarishNamazov/cpms/
 # Copyright © 2022 Abutalib Barish Namazov <abutalib.namazov@hotmail.com>
 #
@@ -27,6 +27,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 class Config:
     """This class will contain the configuration for CMS. This needs
     to be populated at the initilization stage. This is loaded by
@@ -62,5 +63,11 @@ class Config:
         self.trusted_sandbox_max_processes = 1000
         self.trusted_sandbox_max_time_s = 10.0
         self.trusted_sandbox_max_memory_kib = 4 * 1024 * 1024  # 4 GiB
+
+        # self.log_dir = os.path.join("/", "var", "local", "log", "cms")
+        # self.cache_dir = os.path.join("/", "var", "local", "cache", "cms")
+        self.log_dir = "/home/barish/dev/cpms_tmp/log"
+        self.cache_dir = "/home/barish/dev/cpms_tmp/cache"
+
 
 config = Config()
